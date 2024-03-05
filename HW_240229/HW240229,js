@@ -85,6 +85,17 @@ db.departments.find({ name: "IT" }, { employees: { $slice: [2, 3] } })
 db.departments.find({ name: "HR" }, { employees: { $slice: [2, 2] } })
 
 // Получить первого сотрудника из департамента IT и отобразить только его имя.
-db.departments.findOne({ name: "IT" }, { _id: 0, position:0, employees: { $slice:  1 } });
+db.departments.findOne({ name: "IT" }).employees[0].name
+//     Получить первого сотрудника из департамента IT и отобразить только его имя.
+db.departments.findOne({ name: "IT" }, { employees: { $slice: ["$employees.name", 0, 1] } }).employees
+
+db.departments.findOne({ name: 'IT' }).employees[0].name
+
+db.departments.findOne({ name: 'IT' }).employees.length // 5
+
+db.departments.findOne({ name: 'IT' }).employees.find(el => el.position === 'CTO')
+db.departments.findOne({ name: 'IT' }).employees.map(el => el.position)
+
+db.departments.findOne({ name: 'IT' }).employees.filter(el => el.position === 'CTO' || el.position === 'Developer')
 
 
