@@ -186,3 +186,197 @@ db.employees.find(
     {},
     { _id: 0, name: 1, skills: 1 }
 )
+
+// aggregate()
+// $sum - найти сумму поля
+// $avg - найти среднее значение поля
+// $min - найти минимальное значение поля
+// $max - найти максимальное значение поля
+// $project - выбырает указанные поля из коллекции
+// $match - выполняет фильтрацию
+// $group - группировка, агрегирование
+// $sort - сортирует документ
+// $skip - пропустить документы
+// $limit - ограничить кол/во дукументов
+
+
+// https://github.com/annykh/GenTech-220823/blob/main/Main%20Lesson%20-%2029.02.js
+// и добавить следующие 3
+db.workers.insertMany([
+    {
+        _id: 6,
+        firstname: 'Inga',
+        lastname: 'Petrova',
+        age: 45,
+        position: 'IT programmer',
+        salary: 7500,
+        skills: ['Java', 'Python']
+    },
+    {
+        _id: 7,
+        firstname: 'Boris',
+        lastname: 'Ivanov',
+        age: 36,
+        position: 'Server',
+        salary: 6400,
+        skills: ['taking payments']
+    },
+
+    {
+        _id: 8,
+        firstname: 'Inga',
+        lastname: 'Ivanova',
+        age: 36,
+        position: 'Sommelier',
+        salary: 2500,
+        skills: ['curating a wine list', 'creating wine pairings']
+    }
+])
+
+// Вывести имя и зарплату всех сотрудников с зарплатой выше 2000 и сортировать по возрастанию зарплаты:
+db.workers.aggregate(
+    [
+        { $match: { salary: { $gt: 2000 } } },
+        { $project: { _id: 0, firstname: 1, salary: 1 } },
+        { $sort: { salary: 1 } }
+    ]
+)
+// Найти сотудника с максимальной зарплатой, вывести только имя и зарплату.
+db.workers.aggregate(
+    [
+        { $project: { _id: 0, firstname: 1, salary: 1 } },
+        { $sort: { salary: -1 } },
+        { $limit: 1 }
+    ]
+)
+
+
+// Найти сумму зарплат всех сотрудников.
+db.workers.aggregate(
+    [
+        { $group: { _id: null, total_sum: { $sum: '$salary' } } }
+    ]
+)
+
+// Найти сумму зарплат сотрудников сгруппировать по имени:
+db.workers.aggregate(
+    [
+        { $group: { _id: '$firstname', total_sum: { $sum: '$salary' } } }
+    ]
+)
+
+// Найти сумму зарплат сотрудников, сгруппировать по имени, сортитовать по убыванию суммы:
+db.workers.aggregate(
+    [
+        { $group: { _id: '$firstname', total_salary: { $sum: '$salary' } } },
+        { $sort: { total_salary: -1 } }
+    ]
+)
+
+
+// Найти сумму зарплат сотрудников с именем Инга:
+db.workers.aggregate(
+    [
+        { $match: { firstname: 'Inga' } },
+        { $group: { _id: '$firstname', total_salary: { $sum: '$salary' } } }
+    ]
+)
+// Найти среднее значение поля salary:
+db.workers.aggregate(
+    [
+        { $group: { _id: null, avg_salary: { $avg: '$salary' } } }
+    ]
+)
+
+
+// создать новую коллекцию 
+db.employees1.insertMany([
+    {
+        "firstname": "John",
+        "lastname": "Doe",
+        "age": 35,
+        "salary": 5000,
+        "department": "HR",
+        "position": "Manager"
+    },
+    {
+        "firstname": "Jane",
+        "lastname": "Smith",
+        "age": 28,
+        "salary": 4000,
+        "department": "IT",
+        "position": "Developer"
+    },
+    {
+        "firstname": "Alice",
+        "lastname": "Johnson",
+        "age": 42,
+        "salary": 6000,
+        "department": "Finance",
+        "position": "Accountant"
+    },
+    {
+        "firstname": "Michael",
+        "lastname": "Brown",
+        "age": 30,
+        "salary": 5500,
+        "department": "Marketing",
+        "position": "Marketing Specialist"
+    },
+    {
+        "firstname": "Emily",
+        "lastname": "Davis",
+        "age": 33,
+        "salary": 5200,
+        "department": "Sales",
+        "position": "Sales Manager"
+    },
+    {
+        "firstname": "David",
+        "lastname": "Wilson",
+        "age": 38,
+        "salary": 5800,
+        "department": "Operations",
+        "position": "Operations Director"
+    },
+    {
+        "firstname": "Emma",
+        "lastname": "Miller",
+        "age": 45,
+        "salary": 6200,
+        "department": "HR",
+        "position": "HR Director"
+    },
+    {
+        "firstname": "Andrew",
+        "lastname": "Taylor",
+        "age": 40,
+        "salary": 5900,
+        "department": "IT",
+        "position": "IT Director"
+    }
+])
+// Найти среднюю зарплату среди сотрудников в отделе IT.
+
+db.employees1.aggregate(
+    [
+    { $match: { department: 'IT' } },
+    { $group: { _id: null, avg_salary: { $avg: '$salary' } } }
+    ]
+)
+
+// Найти средний возраст сотрудников в каждом департаменте.
+db.employees1.aggregate(
+    [
+    { $group: { _id: '$department', avg_age: { $avg: '$age' } } }
+    ]
+)
+
+// Найти средний возраст среди сотрудников с зарплатой выше 5500.
+
+db.employees1.aggregate(
+    [
+    { $match: { salary: { $gt: 5500 } } },
+    { $group: { _id: null, avg_age: { $avg: '$age' } } }
+    ]
+)
