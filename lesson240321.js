@@ -116,7 +116,7 @@ db.employees.updateMany(
     { $pull: { projects: "Project A" } }
 )
 
-//   20. Добавить новый навык "communication" для сотрудников из отдела "Marketing"
+// 20. Добавить новый навык "communication" для сотрудников из отдела "Marketing"
 db.employees.updateMany(
     { department: 'Marketing' },
     { $addToSet: { skills: 'communicaton' } }
